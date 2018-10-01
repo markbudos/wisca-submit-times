@@ -2,7 +2,7 @@
 <html dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>SUBMIT SPLITS 1</title>
+<title>SUBMIT SPLITS 2</title>
 <body>
 
 HELLO
