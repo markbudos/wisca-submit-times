@@ -1,0 +1,24 @@
+#eventAutoComplete {
+	width:25em; /* set width here or else widget will expand to fit its container */
+	z-index:60;
+}
+#schoolAutoComplete {
+	width:25em; /* set width here or else widget will expand to fit its container */
+	z-index:50;
+}
+#athleteAutoComplete {
+	width:25em; /* set width here or else widget will expand to fit its container */
+	z-index:40;
+}
+#locationAutoComplete {
+	width:25em; /* set width here or else widget will expand to fit its container */
+	z-index:30;
+}
+
+.dataInput {
+	margin-bottom:2em;
+}
+.errors {
+	margin-top:2em;
+	color:red;
+}
