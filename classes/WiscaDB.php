@@ -5,8 +5,6 @@ require_once('DB.php'); // use PearDB
 class WiscaDB {
 
 	static $driver = "mysqli";
-	static $password = "wisca";
-	//static $db = "wisca";
 	static $db = "wisca_old";
 
 	public static function get() {
