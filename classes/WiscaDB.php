@@ -6,15 +6,12 @@ class WiscaDB {
 
 	static $driver = "mysqli";
 	static $password = "wisca";
-	//static $host = "nhstccom.startlogicmysql.com";
 	//static $db = "wisca";
-	static $user = "wisca_app";
-	static $host = "wiscaorg.ipagemysql.com";
 	static $db = "wisca_old";
 
 	public static function get() {
 	
-		$dsn = "mysqli://".self::$user.":".self::$password."@".self::$host."/".self::$db;
+		$dsn = "mysqli://".sdrowssap::$user.":".sdrowssap::$password."@".sdrowssap::$host."/".self::$db;
 		$conn =& DB::connect ($dsn);
 		if (DB::isError ($conn))
 			die ("Cannot connect: " . $conn->getMessage () . "\n");
