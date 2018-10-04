@@ -1,4 +1,6 @@
 <?php 
+require_once 'classes/Session.php';
+
 Session::getSession()->checkUser(Session::$MEMBER);
 HeaderNav::stream("Edit Users");
 $thisuser = Session::getSession()->user;

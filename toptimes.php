@@ -1,4 +1,5 @@
 <?php 
+require_once 'classes/Session.php';
 
 Session::getSession()->checkUser(Session::$MEMBER);
 $classification = isset($_REQUEST['c']) ? $_REQUEST['c'] : (isset($_COOKIE['cl']) ? $_COOKIE['cl'] : 'AAAA');

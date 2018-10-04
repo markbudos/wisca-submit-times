@@ -65,6 +65,11 @@ class Session {
 
 }
 
+spl_autoload_register('autoload');
+function autoload($class) {
+	include_once("classes/".$class.'.php');
+}
+
 Session::getSession();
 
 ?>

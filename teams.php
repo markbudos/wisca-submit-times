@@ -1,4 +1,6 @@
 <?php 
+require_once 'classes/Session.php';
+
 Session::getSession()->checkUser(Session::$REG);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

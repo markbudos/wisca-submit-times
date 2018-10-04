@@ -10,7 +10,7 @@ class WiscaDB {
 	public static function get() {
 	
 		$dsn = "mysqli://".sdrowssap::$user.":".sdrowssap::$password."@".sdrowssap::$host."/".self::$db;
-		$conn =& DB::connect ($dsn);
+		$conn = DB::connect ($dsn);
 		if (DB::isError ($conn))
 			die ("Cannot connect: " . $conn->getMessage () . "\n");
 		return $conn;

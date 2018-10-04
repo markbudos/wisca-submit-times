@@ -15,7 +15,7 @@ class Athlete {
 		$this->firstName = $row['firstname'];
 		$this->lastName = $row['lastname'];
 		$this->gradyear = $row['gradyear'];
-		$this->athleteId = $row['athleteId'];
+		$this->athleteId = $row['participantId'];
 		$month = date('n');
 		$year = date('Y');
 		if ($month > 8) { $year++; }
@@ -42,7 +42,7 @@ class Athlete {
 		}
 		$score = ($result['team'] ? $result['team'] : $this->label().', '.$result['school']);
 		$score = ($result['minutes'] ? $result['minutes'].':' : '');
-		if ($result[6] == 'd') {
+		if ($result['type'] == 'd') {
 			$score .= $result['points'];
 		} else {
 			$score .= self::padZero($result['seconds'], 2).'.'.self::padZero($result['milliseconds'], 2);

@@ -1,9 +1,12 @@
 <?php 
+require_once 'classes/Session.php';
+
 Session::getSession()->checkUser(Session::$WWW);
 $user = Session::getSession()->user; 
 ?>
 
 <?php
+
 $rd = 'account.php';
 if (isset($_REQUEST['rd'])) {
 	$rd = $_REQUEST['rd'];

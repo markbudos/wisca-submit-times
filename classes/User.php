@@ -37,6 +37,7 @@ class User {
 			}
 		} 
 		$guid = null;
+		$user = null;
 		if (isset($_COOKIE['guid'])) {
 			$guid = $_COOKIE['guid'];
 			$result =& $conn->query("select * from Users where guid = ? and deleted is null", array($guid));
