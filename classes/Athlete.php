@@ -50,7 +50,7 @@ class Athlete {
 		$ret[] = $score;
 		
 		if (Session::getSession()->user->admin || Session::getSession()->user->name == $results['name']) {
-			$ret[] = 'submitted by: '.$result['name'];
+			$ret[] = 'Submitted by: '.$result['name'];
 		}
 		return $ret;
 	}
