@@ -21,6 +21,7 @@ if ($user->email) {
 	if (!$user->member && !$user->admin) {
 		echo '<p>As a registered user, you can submit times.  Please contact <a href="mailto:newportswimdive@live.com?subject=Membership information.">WISCA Membership</a> for membership information and the ability to view all submissions.</p>';
 	}
+	
 	echo '<input type="hidden" name="type" value="save" />';
 	echo '<input type="hidden" name="rd" value="'.$rd.'" />';
 	echo '<div style="margin-bottom: 9px">E-Mail : ';
