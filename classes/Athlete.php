@@ -43,7 +43,7 @@ class Athlete {
 		$score = ($result['team'] ? $result['team'] : $this->label().', '.$result['school']);
 		$score = ($result['minutes'] ? $result['minutes'].':' : '');
 		if ($result['type'] == 'd') {
-			$score .= $result['points'];
+			$score .= number_format($result['points'], 2);
 		} else {
 			$score .= self::padZero($result['seconds'], 2).'.'.self::padZero($result['milliseconds'], 2);
 		}
