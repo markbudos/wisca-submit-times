@@ -31,7 +31,7 @@ $gender = isset($_REQUEST['g']) ? $_REQUEST['g'] : (($month == 12 || ($month == 
 $year = isset($_REQUEST['y']) ? $_REQUEST['y'] : date('Y');
 $endyear = $year;
 if ($gender == 'm') {
-	if ($month < 10) {
+	if ($month < 11) {
 		$year--;
 	} else {
 		$endyear++;
