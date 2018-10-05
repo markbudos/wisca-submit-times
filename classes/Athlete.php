@@ -89,7 +89,7 @@ class Athlete {
 		$year = date('Y');
 		if ($month >= 6) { $year++; }
 
-		$result =& $conn->query("select firstname, lastname, gradyear, athleteId 
+		$result =& $conn->query("select firstname, lastname, gradyear, athleteId 'participantId' 
 			from Athletes as a 
 			join Schools as s on (s.schoolId = a.schoolId and s.school = ?)
 			where gradyear >= ?
