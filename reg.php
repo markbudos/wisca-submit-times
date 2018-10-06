@@ -7,13 +7,18 @@ $msg = NULL;
 
 //if password is wrong, then user will be empty
 if ($user && isset($_REQUEST['type']) && $_REQUEST['type'] == 'save' && $_REQUEST['newemail']) {  
-	$user->newpassword = $_REQUEST['newpassword'] ? $_REQUEST['newpassword'] : null;
-	$user->email = $_REQUEST['newemail'] ? $_REQUEST['newemail'] : $user->email;
-	$user->name = $_REQUEST['name'];
-	$user->affiliation = $_REQUEST['aff'];
-	$user->save();
-	$msg = 'Account successfully saved.';
-	Session::getSession()->reset();
+	$newemail = $_REQUEST['newemail'] ? $_REQUEST['newemail'] : $user->email;
+	if ($newemail != $user->email && $user->emailTaken($newemail)) {
+		$msg = 'Email address '.$newemail.' is already registered.';
+	} else {
+		$user->newpassword = $_REQUEST['newpassword'] ? $_REQUEST['newpassword'] : null;
+		$user->email = $_REQUEST['newemail'] ? $_REQUEST['newemail'] : $user->email;
+		$user->name = $_REQUEST['name'];
+		$user->affiliation = $_REQUEST['aff'];
+		$user->save();
+		$msg = 'Account successfully saved.';
+		Session::getSession()->reset();
+	}
 } else if (($user && !$user->email) && isset($_REQUEST['type']) && $_REQUEST['type'] == 'new'  && isset($_REQUEST['email']) && ($_REQUEST['password'])) {
 	$user->email = $_REQUEST['email'];
 	$user->name = $_REQUEST['name'];
