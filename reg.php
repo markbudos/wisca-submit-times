@@ -28,7 +28,7 @@ if ($user && isset($_REQUEST['type']) && $_REQUEST['type'] == 'save' && $_REQUES
 		$msg = 'Account successfully created.';
 		Session::getSession()->reset();
 	} else {
-		$msg = 'Email address already registered.';
+		$msg = 'Email address '.$user->email.' already registered.';
 	}
 } else if (isset($_REQUEST['logout'])) {
 	$msg = 'Successful logout.';
