@@ -34,7 +34,6 @@ class Athlete {
 	public function formatResult($result, $includeEvent, $dupe = false) {
 		$ret = array();
 		$ret[] = $result['date'];
-		$ret[] = '@'.$result['location'];
 		$ret[] = ($result['team'] ? $result['team'] : $this->label().', '.$result['school']);
 		if ($includeEvent) {
 			$event = new Event(); $event->event = $result['event']; $event->type = $result['type'];
@@ -48,6 +47,7 @@ class Athlete {
 			$score .= self::padZero($result['seconds'], 2).'.'.self::padZero($result['milliseconds'], 2);
 		}
 		$ret[] = $score;
+		$ret[] = '@'.$result['location'];
 		
 		if (Session::getSession()->user->admin || Session::getSession()->user->name == $result['name']) {
 			$ret[] = 'submitted by: '.$result['name'];
