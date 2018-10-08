@@ -129,6 +129,7 @@ class User {
 		$ip = $_SERVER['REMOTE_ADDR']; 
 		$useragent = $_SERVER['HTTP_USER_AGENT'];		
 		return md5($guid.$ip.$useragent);
+
 	}
 
 	public function init($row) {
