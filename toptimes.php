@@ -5,11 +5,9 @@ Session::getSession()->checkUser(Session::$MEMBER);
 $classification = isset($_REQUEST['c']) ? $_REQUEST['c'] : (isset($_COOKIE['cl']) ? $_COOKIE['cl'] : 'AAAA');
 
 HeaderNav::stream("View Times");
-?>
 
-<h3>State Times <?php echo $classification; ?></h3>
+echo '<h3>State Times '.$classification.'</h3>';
 
-<?php 
 //set up the year and yearend variables...girls and boys will be based on time period of the season..
 $month = date('n');
 $day = date('d');

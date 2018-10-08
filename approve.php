@@ -14,7 +14,6 @@ if (isset($_REQUEST['resultid']) && isset($_REQUEST['action'])) {
         Event::setResult($resultId, -1);
     }
 }
-
 header('Content-Type: application/json');
 echo json_encode( array("resultId"=>$resultId, "action"=>$action) );
 

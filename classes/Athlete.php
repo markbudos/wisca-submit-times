@@ -47,7 +47,7 @@ class Athlete {
 			$score .= self::padZero($result['seconds'], 2).'.'.self::padZero($result['milliseconds'], 2);
 		}
 		$ret[] = $score;
-		$ret[] = '@'.$result['location'];
+		$ret[] = '@'.$result['location'];  //move location to the end.
 		
 		if (Session::getSession()->user->admin || Session::getSession()->user->name == $result['name']) {
 			$ret[] = 'submitted by: '.$result['name'];
