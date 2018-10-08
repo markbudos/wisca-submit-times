@@ -7,8 +7,17 @@ class Athlete {
 	public $gradyear;
 	public $athleteId;
 
-	public function label() {
-		return $this->firstName.' '.$this->lastName.' ('.$this->year.')';
+	public function label($eventdate = null) {
+
+		$date = date_create('today');
+		if ($eventdate) {
+			$date = date_create($eventdate);
+		}
+		$month = $date->format('n');
+		$year = $date->format('Y');
+		if ($month > 8) { $year++; }
+		$class = 12 - ($this->gradyear - $year);
+		return $this->firstName.' '.$this->lastName.' ('.$class.')';
 	}
 
 	public function init($row) {
@@ -16,10 +25,6 @@ class Athlete {
 		$this->lastName = $row['lastname'];
 		$this->gradyear = $row['gradyear'];
 		$this->athleteId = $row['participantId'];
-		$month = date('n');
-		$year = date('Y');
-		if ($month > 8) { $year++; }
-		$this->year = 12 - ($this->gradyear - $year);
 	}
 
 	private function padZero($str, $length) {
@@ -31,15 +36,14 @@ class Athlete {
 		return $str;
 	}
 
-	public function formatResult($result, $includeEvent, $dupe = false) {
+	public function formatResult($result, $includeEvent) {
 		$ret = array();
 		$ret[] = $result['date'];
-		$ret[] = ($result['team'] ? $result['team'] : $this->label().', '.$result['school']);
+		$ret[] = ($result['team'] ? $result['team'] : $this->label($ret[0]).', '.$result['school']);
 		if ($includeEvent) {
 			$event = new Event(); $event->event = $result['event']; $event->type = $result['type'];
 			$ret[] = $event->label();
 		}
-		$score = ($result['team'] ? $result['team'] : $this->label().', '.$result['school']);
 		$score = ($result['minutes'] ? $result['minutes'].':' : '');
 		if ($result['type'] == 'd') {
 			$score .= number_format($result['points'], 2);
@@ -47,7 +51,7 @@ class Athlete {
 			$score .= self::padZero($result['seconds'], 2).'.'.self::padZero($result['milliseconds'], 2);
 		}
 		$ret[] = $score;
-		$ret[] = '@'.$result['location'];  //move location to the end.
+		$ret[] = '@'.$result['location'];
 		
 		if (Session::getSession()->user->admin || Session::getSession()->user->name == $result['name']) {
 			$ret[] = 'submitted by: '.$result['name'];
