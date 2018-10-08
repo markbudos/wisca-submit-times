@@ -4,19 +4,6 @@ require_once 'classes/Session.php';
 Session::getSession()->checkUser(Session::$MEMBER);
 $classification = isset($_REQUEST['c']) ? $_REQUEST['c'] : (isset($_COOKIE['cl']) ? $_COOKIE['cl'] : 'AAAA');
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && Session::getSession()->user->admin) {
-//process potential approvals and denials
-	foreach ($_POST as $var=>$post) {
-		$keyval = explode("_", $var);
-		if (count($keyval) > 1 && $keyval[0] === 'result') {
-			if ($post === 'deny') {
-				Event::setResult($keyval[1], -1);
-			} else if ($post === 'accept') {
-				Event::setResult($keyval[1], 1);
-			}
-		}
-	}
-}
 HeaderNav::stream("View Times");
 ?>
 
@@ -102,15 +89,21 @@ foreach ($events as $event) {
 		if ($result['validated']) { $style .= 'font-weight:bold;'; }
 		
 		$row = $athlete->formatResult($result, false);
-		echo '<tr>';  
+		echo '<tr>';
 		if (Session::getSession()->user->admin) {
-			echo '<td style="width:160px;"><input type="radio" name="result_'.$result['resultId'].'" value="accept"'.($result['validated'] ? ' disabled' : '').'> Accept';
-			echo '<input type="radio" name="result_'.$result['resultId'].'" value="deny"> Delete</td>';
+			echo '<td style="width:80px;">';
+			echo '<input onclick="resultAccept(this)" type="radio" name="result_'.$result['resultId'].'" value="accept">';
+			echo '<span style="width:80px;text-align=left">'.($result['validated'] ? 'Suspend' : 'Accept').'</span>';
+			echo '</td>';
+			echo '<td style="width:80px;">';
+			echo '<input onclick="resultDelete(this)" type="radio" name="result_'.$result['resultId'].'" value="deny">';
+			echo '<span style="width:80px;text-align=left">Delete</span>';
+			echo '</td>';
 		}
 		$i = 0;
-		$widths = array(100, 80, 220, 300, 60, 300);
+		$widths = array(100, 80, 280, 60, 220, 300);
 		foreach ($row as $td) {
-			if (($i++ == 0 || $i == 3 || $i == 4) && $style) {
+			if (($i++ == 0 || $i == 2 || $i == 3) && $style) {
 				echo '<td width="'.$widths[$i].'" style="'.$style.'">'.$td.'</td>';
 			} else {
 				echo '<td width="'.$widths[$i].'">'.$td.'</td>';
@@ -119,10 +112,55 @@ foreach ($events as $event) {
 		echo '</tr>';
 	}
 	echo '</table>';
+	echo '</form>';
 }
 
-if (Session::getSession()->user->admin) {
-	echo '<div style="margin-top: 2em"><input type="submit" value="Apply" /></div>';
-}
 ?>
+<script>
+function swapRowStyle(tr, style, change) {
+	tr.children[2].style[style] = 
+		tr.children[3].style[style] = 
+		tr.children[4].style[style] = change;
+}
+
+function resultDelete(input) {
+	var tr = input.parentNode.parentNode;
+	var participant = tr.children[3].firstChild.nodeValue;
+	var nextRow = tr;
+	while (nextRow = nextRow.nextSibling) {
+		if (participant == nextRow.children[3].firstChild.nodeValue) {
+			swapRowStyle(nextRow, 'fontStyle', 'initial');
+			break;
+		}
+	}
+
+	var resultid = tr.children[0].firstChild.name.split('_')[1];
+	Wisca.ajax("/scripts/approve.php?action=delete&resultid="+resultid, function(responseText) {
+		var response = responseText;
+	});
+
+	setTimeout(function(tohide) {	
+		tohide.style.display = 'none';
+	}, 1000, tr);
+}
+
+function resultAccept(input) {
+	var tr = input.parentNode.parentNode;
+	var accept = tr.children[0].firstChild;
+	var wasLabel = accept.nextSibling.firstChild.nodeValue;
+	swapRowStyle(tr, 'fontWeight', (wasLabel == 'Accept' ? 'bold' : 'normal'));
+
+	Wisca.ajax("/scripts/approve.php?action="+wasLabel.toLowerCase()+"&resultid="+accept.name.split('_')[1], function(responseText) {
+		var response = responseText;
+	});
+
+	setTimeout(function(tochange) {	
+		var label = tochange.nextSibling.firstChild;
+		label.nodeValue = (label.nodeValue == 'Suspend' ? "Accept" : "Suspend");
+		tochange.checked = false;
+	}, 1000, accept);
+}
+</script>
+
+<script type="text/javascript" src="wisca.js"></script>
 </body>

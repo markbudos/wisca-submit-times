@@ -1,3 +1,14 @@
 .dupe {
 	font-weght: bold;
 }
+
+.toggle-content {
+	display: none;
+	height: 0;
+	transition: height 350ms ease-in-out;
+}
+
+.toggle-content.is-visible {
+	display: block;
+	height: auto;
+}

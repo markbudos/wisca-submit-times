@@ -77,26 +77,30 @@ class User {
 		return $user;					
 	}
 
-	public function save() {
+	public function emailTaken($email) {
+		$conn = WiscaDB::get();
+		$result = $conn->query("select * from Users where email = ?", array($email));
+		$user = null;
+		if ($row =& $result->fetchRow()) {
+			$user = new User();
+			$user->init($row);
+		}
+		$conn->disconnect();
+		return $user;
+	}
+
+	public function save() {  //can't update the email address if it's taken
 		$conn = WiscaDB::get();
 		if ($this->newpassword) {
 			$result = $conn->query("update Users set encpass = ? where guid = ?", array(md5($this->newpassword), $this->guid));
 		}
-		$result = $conn->query("update Users set name = ?, email = ?, member = ?, admin = ?, modified = NOW(), affiliation = ? where guid = ?", array($this->name, $this->email, $this->member, $this->admin, $this->affiliation, $this->guid));
-		if ($this->deleted === true) {
-			$result = $conn->query("update Users set deleted = NOW() where guid = ?", array($this->guid));
-		} else if ($this->deleted === false) {
-			$result = $conn->query("update Users set deleted = null where guid = ?", array($this->guid));
-		}
+		$deleted = ($this->deleted ? date("Y-m-d H:i:s") : null);
+		$result = $conn->query("update Users set name = ?, email = ?, member = ?, admin = ?, deleted = ?, modified = NOW(), affiliation = ? where guid = ?", array($this->name, $this->email, $this->member, $this->admin, $deleted, $this->affiliation, $this->guid));
 		$conn->disconnect();
 	}
 
 	public function make() {
-		$conn = WiscaDB::get();
-		$result = $conn->query("select * from Users where email = ?", array($this->email));
-		if ($row =& $result->fetchRow()) {
-			$user = new User();
-			$user->init($row);
+		if ($user = $this->emailTaken($user->email)) {
 			if ($user->deleted) {
 				$user->deleted = false;
 				$user->name = $this->name;
@@ -105,13 +109,13 @@ class User {
 				$user->save();
 				setcookie('guid', $user->guid);
 			} else {
-				$conn->disconnect();
 				return false;
 			}
 		} else {
+			$conn = WiscaDB::get();
 			$result = $conn->query("insert into Users (guid, created, modified, email, encpass, name, affiliation) values (?, NOW(), NOW(), ?, ?, ?, ?)", array($this->guid, $this->email, md5($this->newpassword), $this->name, $this->affiliation));  
+			$conn->disconnect();
 		}
-		$conn->disconnect();
 		return true;
 	}
 
@@ -125,6 +129,7 @@ class User {
 		$ip = $_SERVER['REMOTE_ADDR']; 
 		$useragent = $_SERVER['HTTP_USER_AGENT'];		
 		return md5($guid.$ip.$useragent);
+
 	}
 
 	public function init($row) {

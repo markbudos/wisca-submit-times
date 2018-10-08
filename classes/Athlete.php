@@ -34,7 +34,6 @@ class Athlete {
 	public function formatResult($result, $includeEvent, $dupe = false) {
 		$ret = array();
 		$ret[] = $result['date'];
-		$ret[] = '@'.$result['location'];
 		$ret[] = ($result['team'] ? $result['team'] : $this->label().', '.$result['school']);
 		if ($includeEvent) {
 			$event = new Event(); $event->event = $result['event']; $event->type = $result['type'];
@@ -48,8 +47,9 @@ class Athlete {
 			$score .= self::padZero($result['seconds'], 2).'.'.self::padZero($result['milliseconds'], 2);
 		}
 		$ret[] = $score;
+		$ret[] = '@'.$result['location'];
 		
-		if (Session::getSession()->user->admin || Session::getSession()->user->name == $results['name']) {
+		if (Session::getSession()->user->admin || Session::getSession()->user->name == $result['name']) {
 			$ret[] = 'submitted by: '.$result['name'];
 		}
 		return $ret;
@@ -89,7 +89,7 @@ class Athlete {
 		$year = date('Y');
 		if ($month >= 6) { $year++; }
 
-		$result =& $conn->query("select firstname, lastname, gradyear, athleteId 
+		$result =& $conn->query("select firstname, lastname, gradyear, athleteId 'participantId' 
 			from Athletes as a 
 			join Schools as s on (s.schoolId = a.schoolId and s.school = ?)
 			where gradyear >= ?

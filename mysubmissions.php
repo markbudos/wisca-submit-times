@@ -50,6 +50,7 @@ foreach ($results as $result) {
 	echo '<tr>';  
 	$i = 0;
 	$widths = array(0, 90, 150, 300, 150, 60, 200);
+	$style = null;
 	foreach ($row as $td) {
 		if (($i++ == 0 || $i == 3 || $i == 4) && $style) {
 			echo '<td width="'.$widths[$i].'" style="'.$style.'">'.$td.'</td>';

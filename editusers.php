@@ -10,62 +10,27 @@ if ($thisuser->admin) {
 	echo '<h3>Edit Users</h3>';
 	$all = isset($_REQUEST['all']);
 	echo $all ? '<a href="editusers.php">Hide deleted</a>' : '<a href="editusers.php?all">Show all</a>';
-	echo '<form method="post" action="editusers.php">';
-	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-		foreach ($_POST as $key=>$value) {
-			$keys = explode('_', $key);
-			if ($keys[0] == 'member' && $_POST['h'.$key] == "0") {
-				$user = User::loadUserByUserId($keys[1]);
-				$user->member = 1;
-				$user->save();
-				echo $user->name.' is now a member.<br>';
-			} else if ($keys[0] == 'admin' && $_POST['h'.$key] == '0') {
-				$user = User:: loadUserByUserId($keys[1]);
-				$user->admin = 1;
-				$user->save();
-				echo $user->name.' is now an admin.<br>';
-			} else if ($keys[0] == 'hmember' && $value == '1' && !isset($_POST['member_'.$keys[1]])) {
-				$user = User:: loadUserByUserId($keys[1]);
-				$user->member = 0;
-				$user->save();
-				echo $user->name.' is no longer a member.<br>';
-			} else if ($keys[0] == 'hadmin' && $value == '1' && !isset($_POST['admin_'.$keys[1]])) {
-				$user = User:: loadUserByUserId($keys[1]);
-				$user->admin = 0;
-				$user->save();
-				echo $user->name.' is no longer an admin.<br>';
-			} else if ($keys[0] == 'deleted' && $_POST['h'.$key] == "0") {
-				$user = User:: loadUserByUserId($keys[1]);
-				$user->deleted = true;
-				$user->save();
-				echo $user->name.' has been deleted.<br>';
-			} else if ($keys[0] == 'hdeleted' && $value == '1' && !isset($_POST['deleted_'.$keys[1]])) {
-				$user = User:: loadUserByUserId($keys[1]);
-				$user->deleted = false;
-				$user->save();
-				echo $user->name.' has been restored.<br>';
-			}
-		}
-	}
 } else {
 	echo '<h3>Users</h3>';
 }
+echo '<form method="post" action="editusers.php">';
 echo '<table>';
 
 $users = UserAdmin::loadUsers($all);
 
 if ($thisuser->admin) {
-	echo '<tr><th>Name</th><th>Email</th><th>Member</th><th>Admin</th><th>Affiliation</th><th>Created</th><th>Modified</th><th>Deleted</th></tr>';
+	echo '<tr><th>Name</th><th>Email</th><th>Member</th><th>Admin</th><th>Deleted</th><th>Affiliation</th><th>Created</th><th>Modified</th></tr>';
 } else {
 	echo '<tr><th>Name</th><th>Email</th><th>Member</th><th>Affiliation</th><th>Created</th></tr>';
 }
 foreach ($users as $user) {
-	echo '<tr>';
+	echo '<tr onclick="userCheck(this)">';
 	echo '<td width="200">'.$user->name.($user->deleted ? ' ('.$user->deleted.') ' : '').'</td>';
 	echo '<td>'.$user->email.'</td>';
 	if ($thisuser->admin) {
-		echo '<td align="center"><input name="member_'.$user->userId.'" type="checkbox" '.($user->member ? ' checked="checked"' : '').'><input name="hmember_'.$user->userId.'" type="hidden" value="'.$user->member.'"</td>';
-		echo '<td align="center"><input name="admin_'.$user->userId.'" type="checkbox" '.($user->admin ? ' checked="checked"' : '').'><input name="hadmin_'.$user->userId.'" type="hidden" value="'.$user->admin.'"</td>';
+		echo '<td align="center"><input name="member_'.$user->userId.'" type="checkbox" '.($user->member ? ' checked="checked"' : '').'><input type="hidden" value="'.$user->member.'"></td>';
+		echo '<td align="center"><input name="admin_'.$user->userId.'" type="checkbox" '.($user->admin ? ' checked="checked"' : '').'><input type="hidden" value="'.$user->admin.'"></td>';
+		echo '<td align="center"><input name="deleted_'.$user->userId.'" type="checkbox" '.($user->deleted ? 'checked="checked"' : '').'><input type="hidden" value="'.($user->deleted ? "1" : "0").'"></td>';
 	} else {
 		echo '<td align="center">'.($user->member ? "Yes" : "No").'</td>';
 	}
@@ -73,14 +38,46 @@ foreach ($users as $user) {
 	echo '<td width="170">'.$user->created.'</td>';
 	if ($thisuser->admin) {
 		echo '<td width="170">'.$user->modified.'</td>';
-		echo '<td align="center"><input name="deleted_'.$user->userId.'" '.($user->deleted ? 'checked="on"' : '').' type="checkbox"><input name="hdeleted_'.$user->userId.'" type="hidden" value="'.($user->deleted ? "1" : "0").'"></td>';
 	}
 	echo '</tr>';
 }
 
-echo '</table>';
-if ($thisuser->admin) {
-	echo '<div style="margin-bottom: 9px"><input type="submit" value="Apply" /></div></form>';
-}
+echo '</table></form>';
 ?>
+
+<script>
+function userCheck(row) {
+	var member = row.children[2].children;
+	var admin = row.children[3].children;
+	var del = row.children[4].children;
+	var qs = "";
+	if (member[0].checked != member[1].value) {
+		member[1].value = member[0].checked ? 1 : 0;
+		qs += "&member="+member[1].value;
+	}
+	if (admin[0].checked != admin[1].value) {
+		admin[1].value = admin[0].checked ? 1 : 0;
+		qs += "&admin="+admin[1].value;
+	}
+	if (del[0].checked != del[1].value) {
+		del[1].value = (del[0].checked ? 1 : 0);
+		qs += "&deleted="+del[1].value;
+		if (del[1].value == 1) {
+			setTimeout(function(tohide) {	
+				tohide.style.display = 'none';
+			}, 500, row);
+		}
+	}
+	if (qs) {
+ 		var userid = member[0].name.split('_')[1];
+		Wisca.ajax("/scripts/edituser.php?userid="+userid+qs, function(responseText) {
+			var response = responseText;
+		});
+	}
+}
+</script>
+
+<script type="text/javascript" src="wisca.js">
+</script>
 </body>
+</html>
