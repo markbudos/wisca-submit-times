@@ -71,7 +71,7 @@ class Athlete {
 		foreach ($athletes as $item) {
 			if ($item->firstName == $firstName && 
 				$item->lastName == $lastName && 
-				$grade == $item->year) {
+				$gradyear == $item->gradyear) {
 				return $item;
 			}
 		}
