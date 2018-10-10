@@ -49,10 +49,11 @@ foreach ($results as $result) {
 	$row = $athlete->formatResult($result, true);
 	echo '<tr>';  
 	$i = 0;
-	$widths = array(0, 90, 150, 300, 150, 60, 200);
+	$widths = array(0, 90, 300, 150, 60, 150, 200);
 	$style = null;
+	if ($result['validated']) { $style .= 'font-weight:bold;'; }
 	foreach ($row as $td) {
-		if (($i++ == 0 || $i == 3 || $i == 4) && $style) {
+		if (($i++ <= 3) && $style) {
 			echo '<td width="'.$widths[$i].'" style="'.$style.'">'.$td.'</td>';
 		} else {
 			echo '<td width="'.$widths[$i].'">'.$td.'</td>';
