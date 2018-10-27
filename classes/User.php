@@ -100,7 +100,7 @@ class User {
 	}
 
 	public function make() {
-		if ($user = $this->emailTaken($user->email)) {
+		if ($user = $this->emailTaken($this->email)) {
 			if ($user->deleted) {
 				$user->deleted = false;
 				$user->name = $this->name;
