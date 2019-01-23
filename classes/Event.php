@@ -34,7 +34,7 @@ class Event {
 			$params[] = $userId;
 			$query .= ' order by r.date desc, e.eventId';
 		} else {
-			$query .= ' order by e.eventId, r.minutes, r.seconds, r.milliseconds';
+			$query .= ' order by e.eventId, r.minutes, r.seconds, r.milliseconds, r.points desc';
 		}
 		$conn = WiscaDB::get();
 		$result =& $conn->query($query, $params);
