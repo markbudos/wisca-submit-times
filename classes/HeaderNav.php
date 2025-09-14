@@ -3,7 +3,7 @@ class HeaderNav {
 
 	public static function stream($item, $css = null, $js = null) {
 
-		if (!$css) { $css = array("http://yui.yahooapis.com/2.8.0r4/build/fonts/fonts-min.css"); }
+		if (!$css) { $css = array("/scripts/yui/fonts-min.css"); }
 		if (!$js) { $js = array(); }
 		echo '<html><head>';
 		foreach ($css as $ss) {

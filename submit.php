@@ -1,6 +1,4 @@
 <?php
-require_once 'classes/Session.php';
-
 Session::getSession()->checkUser(Session::$REG);
 
 $user = Session::getSession()->user;
@@ -84,7 +82,7 @@ if ($_POST) {
 			mail(
 				'markbudos@gmail.com',
 				'New submission',
-				'A new submission has been generated: http://www.wisca.org/scripts/toptimes.php?c='.$classification."\n\n".$text
+				'A new submission has been generated: http://www.wiaca.alwaysdata.net/scripts/toptimes.php?c='.$classification."\n\n".$text
 			);
 			header("Location: mysubmissions.php?post=1");
 		}
@@ -92,16 +90,16 @@ if ($_POST) {
 }
 
 $css = array("submit.css", 
-		"http://yui.yahooapis.com/2.8.0r4/build/fonts/fonts-min.css",
-		"http://yui.yahooapis.com/2.8.0r4/build/autocomplete/assets/skins/sam/autocomplete.css",
-		"http://yui.yahooapis.com/2.8.0r4/build/calendar/assets/skins/sam/calendar.css");
+		"yui/fonts-min.css",
+		"yui/autocomplete.css",
+		"yui/calendar.css");
 
-$js = array("http://yui.yahooapis.com/2.8.0r4/build/yahoo-dom-event/yahoo-dom-event.js",
-		"http://yui.yahooapis.com/2.8.0r4/build/connection/connection-min.js",
-		"http://yui.yahooapis.com/2.8.0r4/build/animation/animation-min.js",
-		"http://yui.yahooapis.com/2.8.0r4/build/datasource/datasource-min.js",
-		"http://yui.yahooapis.com/2.8.0r4/build/autocomplete/autocomplete-min.js",
-		"http://yui.yahooapis.com/2.8.0r4/build/calendar/calendar-min.js");
+$js = array("yui/yahoo-dom-event.js",
+		"yui/connection-min.js",
+		"yui/animation-min.js",
+		"yui/datasource-min.js",
+		"yui/autocomplete-min.js",
+		"yui/calendar-min.js");
 
 HeaderNav::stream("Submit Time", $css, $js);
 

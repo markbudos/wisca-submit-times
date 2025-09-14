@@ -19,7 +19,7 @@ if ($user->email) {
 	if (isset($_GET['msg'])) {	echo '<h4>'.$_GET['msg'].'</h4>'; }
 	echo '<form method="post" action="reg.php">';
 	if (!$user->member && !$user->admin) {
-		echo '<p>As a registered user, you can submit times.  Please contact <a href="mailto:newportswimdive@live.com?subject=Membership information.">WISCA Membership</a> for membership information and the ability to view all submissions.</p>';
+		echo '<p>As a registered user, you can submit times.  Please contact <a href="mailto:nooksack_swimmer@hotmail.com?subject=Membership information.">WISCA Membership</a> for membership information and the ability to view all submissions.</p>';
 	}
 	
 	echo '<input type="hidden" name="type" value="save" />';
@@ -65,7 +65,7 @@ if ($user->email) {
 	echo '<input type="text" name="email" value="" /></div>';
 	echo '<div style="margin-bottom: 9px">Password: ';
 	echo '<input type="password" name="password"/></div>';
-	echo '<p>Please contact <a href="mailto:newportswimdive@live.com?subject=Membership information.">WISCA Membership</a> if you have forgotten your password.</p>';
+	echo '<p>Please contact <a href="mailto:nooksack_swimmer@hotmail.com?subject=Membership information.">WISCA Membership</a> if you have forgotten your password.</p>';
 	echo '<div style="margin-bottom: 9px">';
 	echo '<input type="submit" value="Log In" /></div></form>';
 }

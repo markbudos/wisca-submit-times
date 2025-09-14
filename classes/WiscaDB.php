@@ -1,21 +1,22 @@
 <?php
 
-require_once('DB.php'); // use PearDB
-
 class WiscaDB {
 
-	static $driver = "mysqli";
-	static $db = "wisca_old";
+    // adjust as needed
+    private static $driver = "mysql"; // PDO uses "mysql", not "mysqli"
+    private static $db     = "wiaca_submissions";
 
-	public static function get() {
-	
-		$dsn = "mysqli://".sdrowssap::$user.":".sdrowssap::$password."@".sdrowssap::$host."/".self::$db;
-		$conn = DB::connect ($dsn);
-		if (DB::isError ($conn))
-			die ("Cannot connect: " . $conn->getMessage () . "\n");
-		return $conn;
-	}
+    public static function get() {
+        $dsn = self::$driver . ":host=" . sdrowssap::$host . ";dbname=" . self::$db . ";charset=utf8mb4";
 
+        try {
+            $conn = new PDO($dsn, sdrowssap::$user, sdrowssap::$password);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $conn;
+        } catch (PDOException $e) {
+            die("Cannot connect: " . $e->getMessage() . "\n");
+        }
+    }
 }
 
 ?>

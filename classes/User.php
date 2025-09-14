@@ -16,12 +16,14 @@ class User {
 
 	public static function loadUserByUserId($userId) {
 		$conn = WiscaDB::get();
-		$result =& $conn->query("select * from Users where userId = ?", array($userId));
-		if ($row =& $result->fetchRow()) {
+		$stmt = $conn->prepare("select * from Users where userId = ?");
+                $stmt->execute([$userId]);
+
+		if ($row = $stmt->fetch()) {
 			$user = new User();
 			$user->init($row);
 		}
-		$conn->disconnect();
+		$conn = null;
  		return $user;								
 	}
 
@@ -40,8 +42,9 @@ class User {
 		$user = null;
 		if (isset($_COOKIE['guid'])) {
 			$guid = $_COOKIE['guid'];
-			$result =& $conn->query("select * from Users where guid = ? and deleted is null", array($guid));
-			if ($row =& $result->fetchRow()) {
+			$stmt = $conn->prepare("select * from Users where guid = ? and deleted is null");
+                        $stmt->execute([$guid]);
+			if ($row = $stmt->fetch()) {
 				$user = new User();
 				$user->init($row);
 				if ($setsession) {
@@ -59,44 +62,49 @@ class User {
 			}
 		}
 
-		$conn->disconnect();
+		$conn = null;
  		return $user;								
 	}
 
 	public static function loadUserByEmailPass($email, $pass) {
 		$conn = WiscaDB::get();
-		$result =& $conn->query("select * from Users where email = ? and encpass = ? and deleted is null", array($email, md5($pass)));
+		$stmt= $conn->prepare("select * from Users where email = ? and encpass = ? and deleted is null");
+                $stmt->execute(array($email, md5($pass)));
 		$user = null;
-		if ($row =& $result->fetchRow()) {
+		if ($row = $stmt->fetch()) {
 			$user = new User();
 			$user->init($row);
 			setcookie('guid', $user->guid);
 			setcookie('session', self::makeCookie());
 		}
-		$conn->disconnect();
+		$conn = null;
 		return $user;					
 	}
 
 	public function emailTaken($email) {
 		$conn = WiscaDB::get();
-		$result = $conn->query("select * from Users where email = ?", array($email));
+		$stmt = $conn->prepare("select * from Users where email = ?");
+                $stmt->execute(array($email));
 		$user = null;
-		if ($row =& $result->fetchRow()) {
+		if ($row = $stmt->fetch()) {
 			$user = new User();
 			$user->init($row);
 		}
-		$conn->disconnect();
+		$conn = null;
 		return $user;
 	}
 
 	public function save() {  //can't update the email address if it's taken
 		$conn = WiscaDB::get();
 		if ($this->newpassword) {
-			$result = $conn->query("update Users set encpass = ? where guid = ?", array(md5($this->newpassword), $this->guid));
+			$stmt = $conn->prepare("update Users set encpass = ? where guid = ?");
+                        $stmt->execute(array(md5($this->newpassword), $this->guid));
 		}
 		$deleted = ($this->deleted ? date("Y-m-d H:i:s") : null);
-		$result = $conn->query("update Users set name = ?, email = ?, member = ?, admin = ?, deleted = ?, modified = NOW(), affiliation = ? where guid = ?", array($this->name, $this->email, $this->member, $this->admin, $deleted, $this->affiliation, $this->guid));
-		$conn->disconnect();
+		$stmt = $conn->prepare("update Users set name = ?, email = ?, member = ?, admin = ?, deleted = ?, modified = NOW(), affiliation = ? where guid = ?");
+                $stmt->execute(array($this->name, $this->email, $this->member, $this->admin, $deleted, $this->affiliation, $this->guid));
+ 
+		$conn = null;;
 	}
 
 	public function make() {
@@ -113,8 +121,9 @@ class User {
 			}
 		} else {
 			$conn = WiscaDB::get();
-			$result = $conn->query("insert into Users (guid, created, modified, email, encpass, name, affiliation) values (?, NOW(), NOW(), ?, ?, ?, ?)", array($this->guid, $this->email, md5($this->newpassword), $this->name, $this->affiliation));  
-			$conn->disconnect();
+			$stmt = $conn->prepare("insert into Users (guid, created, modified, email, encpass, name, affiliation) values (?, NOW(), NOW(), ?, ?, ?, ?)");
+                        $stmt->execute(array($this->guid, $this->email, md5($this->newpassword), $this->name, $this->affiliation));  
+			$conn = null;
 		}
 		return true;
 	}

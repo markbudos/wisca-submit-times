@@ -26,18 +26,6 @@ class Session {
 		} else if (!$this->user) {
 			$this->user = User::loadUserByCookie();
 		}
-		if (get_magic_quotes_gpc()) {
-			function stripslashes_deep($value) {
-				$value = is_array($value) ?
-				array_map('stripslashes_deep', $value) :
-				stripslashes($value);
-				return $value;
-			}
-			$_POST = array_map('stripslashes_deep', $_POST);
-			$_GET = array_map('stripslashes_deep', $_GET);
-			$_COOKIE = array_map('stripslashes_deep', $_COOKIE);
-			$_REQUEST = array_map('stripslashes_deep', $_REQUEST);
-		}
 	}
 
 	public function reset() {
@@ -45,7 +33,7 @@ class Session {
 	}
 
 	public function checkUser($type = null) {
-		if (isset($_SERVER['HTTP_HOST']) && !strstr($_SERVER['HTTP_HOST'], 'www')) {
+		if (isset($_SERVER['HTTP_HOST']) && !strstr($_SERVER['HTTP_HOST'], 'www') && substr_count($_SERVER['HTTP_HOST'], '.') == 1) {
 			header("Location: http://www.".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 			die();
 		}
@@ -63,11 +51,6 @@ class Session {
 
 	public $user;
 
-}
-
-spl_autoload_register('autoload');
-function autoload($class) {
-	include_once("classes/".$class.'.php');
 }
 
 Session::getSession();
