@@ -69,10 +69,11 @@ class Athlete {
         $lastName  = $names[1] ?? '';
 
         $athletes = self::loadAthletes($school->school);
+        
         foreach ($athletes as $item) {
             if ($item->firstName === $firstName &&
                 $item->lastName  === $lastName &&
-                $gradyear === $item->gradyear) {
+                intval($gradyear) === intval($item->gradyear)) {
                 return $item;
             }
         }
@@ -86,7 +87,8 @@ class Athlete {
             $conn = null;
         }
 
-        return self::getAthlete($school, $athlete, $grade);
+        $ret = self::getAthlete($school, $athlete, $grade);
+        return $ret;
     }
 
     public static function loadAthletes($school) {
@@ -102,6 +104,7 @@ class Athlete {
                  WHERE gradyear >= ?
               ORDER BY lastname";
         $stmt = $conn->prepare($sql);
+        
         $stmt->execute([$school, $year]);
 
         $athletes = [];
@@ -110,7 +113,6 @@ class Athlete {
             $athlete->init($row);
             $athletes[] = $athlete;
         }
-
         $conn = null;
         return $athletes;
     }

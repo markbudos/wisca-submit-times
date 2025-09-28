@@ -86,6 +86,86 @@ class Event {
         return $events;
     }
 
+	private static function getEvent($event) {
+		$events = self::loadEvents();
+		foreach ($events as $item) {
+			if ($item->label() == $event) {
+				return $item;
+			} 
+		}
+		return null;
+	}
+
+	public static function saveResult($school, $classification, $event, 
+				$athlete, $result, $location, $date, $errors) {
+		$eo = self::getEvent($event);
+		if (!$eo) {
+			$errors[] = '"'.$event.'" is a non-existent event.';
+			return;
+		}
+		$so = School::getSchool($school, $classification, true);
+		if (!$so) {
+			$errors[] = '"'.$school.'" already exists with a different classification.';
+			return;
+		}
+		$participant = $so->schoolId;
+		$type = 't';
+		$points = $eo->type == 'd' ? $result[0] : null;
+		$minutes = $eo->type != 'd' ? $result[0] : null;
+		$seconds = $eo->type != 'd' ? $result[1] : null;
+		$millis = $eo->type != 'd' ? $result[2] : null;
+		$ao = null;
+		if ($eo->type != 'r') {
+			$type = 'a';
+			$matches = array();
+			if (!preg_match("/^(.+) \(*(\d+)\)*/", $athlete, $matches)) {
+				$errors[] = '"'.$athlete.'" requires a grade. (e.g. "Jane Smith (10))")';
+				return;
+			} else if ($matches[2] > 12 || $matches[2] < 9) {
+				$errors[] = '"'.$matches[2].'" must be a number between 9 and 12.';
+				return;
+			}
+
+			$ao = Athlete::getAthlete($so, $matches[1], $matches[2], true);
+			if (!$ao) {
+				$errors[] = 'Unable to create athlete: "'.$athlete.'."';
+				return;
+			}
+			$participant = $ao->athleteId;
+		}
+
+		$conn = WiscaDB::get();
+		$do = date('Y/m/d', strtotime($date));
+		$stmt = $conn->prepare('insert into Results (participantId, type, minutes, seconds, 
+			milliseconds, points, eventId, userId, date, location, created) values 
+			(?,?,?,?,?,?,?,?,?,?,NOW())');
+                $stmt->execute(array($participant, $type, 
+			$minutes, $seconds, $millis, $points, $eo->number, 
+			Session::getSession()->user->userId, $do, $location));
+
+		$conn = null;
+		$team = $school;
+		if ($eo->type != 'r') {
+				$team = '';
+		}
+		$params = array('eventId'=>$eo->number, 
+					   'firstname'=>$ao->firstName, 
+					   'lastname'=>$ao->lastName, 
+					   'team'=>$team, 'school'=>$school, 
+					   'event'=>$eo->event,
+					   'type'=>$eo->type, 
+					   'minutes'=>$minutes, 
+					   'seconds'=>$seconds, 
+					   'milliseconds'=>$millis, $do, 
+					   'gradyear'=>$ao->gradyear, 
+					    0, 0, 
+					   'name'=>Session::getSession()->user->name, 
+					   'location'=>$location,
+					   'date'=>$date
+				);
+		return $params;
+	}
+
     public function init($row) {
         $this->number = $row['eventId'];
         $this->event  = $row['event'];

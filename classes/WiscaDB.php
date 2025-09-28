@@ -4,7 +4,7 @@ class WiscaDB {
 
     // adjust as needed
     private static $driver = "mysql"; // PDO uses "mysql", not "mysqli"
-    private static $db     = "wiaca_submissions";
+    private static $db     = "wisca_old";
 
     public static function get() {
         $dsn = self::$driver . ":host=" . sdrowssap::$host . ";dbname=" . self::$db . ";charset=utf8mb4";

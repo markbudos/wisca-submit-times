@@ -82,7 +82,7 @@ if ($_POST) {
 			mail(
 				'markbudos@gmail.com',
 				'New submission',
-				'A new submission has been generated: http://www.wiaca.alwaysdata.net/scripts/toptimes.php?c='.$classification."\n\n".$text
+				'A new submission has been generated: http://www.wisca.org/scripts/toptimes.php?c='.$classification."\n\n".$text
 			);
 			header("Location: mysubmissions.php?post=1");
 		}
