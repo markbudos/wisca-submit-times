@@ -7,14 +7,20 @@ class WiscaDB {
     private static $db     = "wisca_old";
 
     public static function get() {
-        $dsn = self::$driver . ":host=" . sdrowssap::$host . ";dbname=" . self::$db . ";charset=utf8mb4";
+        $host = getenv('DB_HOST') ?: sdrowssap::$host;
+        $db   = getenv('DB_NAME') ?: self::$db;
+        $user = getenv('DB_USER') ?: sdrowssap::$user;
+        $pass = getenv('DB_PASS') ?: sdrowssap::$password;
+        $dsn  = self::$driver . ":host=" . $host . ";dbname=" . $db . ";charset=utf8mb4";
 
         try {
-            $conn = new PDO($dsn, sdrowssap::$user, sdrowssap::$password);
+            $conn = new PDO($dsn, $user, $pass, [
+                PDO::ATTR_TIMEOUT => 3,
+            ]);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $conn;
         } catch (PDOException $e) {
-            die("Cannot connect: " . $e->getMessage() . "\n");
+            return null;
         }
     }
 }

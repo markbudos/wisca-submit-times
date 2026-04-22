@@ -29,6 +29,11 @@ class User {
 
 	public static function loadUserByCookie() {
 		$conn = WiscaDB::get();
+		if (!$conn) {
+			$user = new User();
+			$user->guid = isset($_COOKIE['guid']) ? $_COOKIE['guid'] : uniqid($_SERVER['REMOTE_ADDR'], true);
+			return $user;
+		}
 		$setsession = true;
 		if (isset($_COOKIE['session'])) {
 			$tmp = self::makeCookie();				
@@ -68,6 +73,7 @@ class User {
 
 	public static function loadUserByEmailPass($email, $pass) {
 		$conn = WiscaDB::get();
+		if (!$conn) { return null; }
 		$stmt= $conn->prepare("select * from Users where email = ? and encpass = ? and deleted is null");
                 $stmt->execute(array($email, md5($pass)));
 		$user = null;

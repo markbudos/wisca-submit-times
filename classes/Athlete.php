@@ -18,10 +18,10 @@ class Athlete {
     }
 
     public function init($row) {
-        $this->firstName = $row['firstname'];
-        $this->lastName  = $row['lastname'];
-        $this->gradyear  = $row['gradyear'];
-        $this->athleteId = $row['participantId'];
+        $this->firstName = $row['firstname'] ?? '';
+        $this->lastName  = $row['lastname'] ?? '';
+        $this->gradyear  = $row['gradyear'] ?? null;
+        $this->athleteId = $row['participantId'] ?? null;
     }
 
     private function padZero($str, $length) {
@@ -33,8 +33,8 @@ class Athlete {
 
     public function formatResult($result, $includeEvent) {
         $ret = [];
-        $ret[] = $result['date'];
-        $ret[] = ($result['team'] ? $result['team'] : $this->label($ret[0]).', '.$result['school']);
+        $date = $result['date'];
+        $ret[] = ($result['team'] ? $result['team'] : $this->label($date).', '.$result['school']);
 
         if ($includeEvent) {
             $event = new Event();
@@ -50,10 +50,11 @@ class Athlete {
             $score .= $this->padZero($result['seconds'], 2).'.'.$this->padZero($result['milliseconds'], 2);
         }
         $ret[] = $score;
+        $ret[] = $date;
         $ret[] = '@'.$result['location'];
 
         if (Session::getSession()->user->admin || Session::getSession()->user->name == $result['name']) {
-            $ret[] = 'submitted by: '.$result['name'];
+            $ret[] = 'by: '.$result['name'];
         }
         return $ret;
     }
