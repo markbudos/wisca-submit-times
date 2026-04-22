@@ -1,4 +1,5 @@
 <?php
+ob_start();
 Session::getSession()->checkUser(Session::$REG);
 
 $user = Session::getSession()->user;
@@ -89,100 +90,110 @@ if ($_POST) {
 	}
 }
 
-$css = array("submit.css", 
-		"yui/fonts-min.css",
-		"yui/autocomplete.css",
-		"yui/calendar.css");
+HeaderNav::stream("Submit Time");
 
-$js = array("yui/yahoo-dom-event.js",
-		"yui/connection-min.js",
-		"yui/animation-min.js",
-		"yui/datasource-min.js",
-		"yui/autocomplete-min.js",
-		"yui/calendar-min.js");
+// Pre-load data for datalists
+$allEvents    = Event::loadEvents();
+$allSchools   = School::loadSchools($classification ?: 'AAA');
+$allLocations = Event::loadLocations();
 
-HeaderNav::stream("Submit Time", $css, $js);
-
-echo '<h3>Submit Time</h3>';
+echo '<h2>Submit Time</h2>';
 
 if ($errors) {
+	echo '<div class="alert alert-error">';
 	foreach ($errors as $error) {
-		echo '<div class="errors">';
-		echo '* '.$error.'<br>';
-		echo '</div>';
+		echo '<div>• '.$error.'</div>';
 	}
+	echo '</div>';
 }
 ?>
-<form method="post" action="submit.php">
-
-<div id="eventAutoComplete" class="dataInput">
-<label class="inputLabel" for="schoolInput">Event:&nbsp;</label>
-<input name="event" id="eventInput" type="text" value="<?php  echo $event; ?>">
-<div id="eventContainer"></div>
-</div>
-
-<div class="dataInput">
-Classification:
-<select name="classification" id="classification">
-<?php
-	echo '<option value="AAAA"'.($classification=='AAAA' ? ' selected' : '').'>AAAA</option>';
-	echo '<option value="AAA"'.($classification=='AAA' ? ' selected' : '').'>AAA</option>';
-	echo '<option value="AA"'.($classification=='AA' ? ' selected' : '').'>AA</option>';
-?>
-</select>
-</div>
-
-<div id="schoolAutoComplete" class="dataInput">
-<label class="inputLabel" for="schoolInput">School:&nbsp;</label>
-<input name="school" id="schoolInput" type="text" value="<?php  echo $school; ?>">
-<div id="schoolContainer"></div>
-</div>
 
 <?php
+// ── Datalists ─────────────────────────────────────────────────
+echo '<datalist id="dl-events">';
+foreach ($allEvents as $e) { echo '<option value="'.htmlspecialchars($e->label()).'">'; }
+echo '</datalist>';
 
+echo '<datalist id="dl-schools">';
+foreach ($allSchools as $s) { echo '<option value="'.htmlspecialchars($s->label()).'">'; }
+echo '</datalist>';
 
-echo '<div id="athleteAutoComplete"';
-if (!$athlete || ($event && strstr($event, 'Relay'))) { echo ' style="display:none;"'; }
-echo 'class="dataInput">';
-echo '<label for="athleteInput">Athlete:&nbsp;</label>';
-echo '<input name="athlete" id="athleteInput" type="text" value="'.$athlete.'">';
-echo '<div id="athleteContainer"></div>';
-echo '</div>';
+echo '<datalist id="dl-locations">';
+foreach ($allLocations as $l) { echo '<option value="'.htmlspecialchars($l->label()).'">'; }
+echo '</datalist>';
 
-echo '<div class="dataInput" id="gradeInput" style="display:none;">Grade: ';
-echo '<select name="grade" id="grade"><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option></select>';
-echo '</div>';
+echo '<datalist id="dl-athletes"></datalist>'; // populated by JS when school changes
 ?>
 
-<?php
-echo '<div class="dataInput" id="timeSelector"';
-if ($diving) { echo ' style="display:none;"'; }
-echo '>';
-echo 'Time:&nbsp;<input id="minutes" style="width:3em;" type="text" name="minutes" value="'.$minutes.'"> : ';
-echo '<input id="seconds" type="text" style="width:3em;" name="seconds" value="'.$seconds.'"> . ';
-echo '<input id="millis" type="text" style="width:3em;" name="millis" value="'.$millis.'"></div>';
-echo '<div class="dataInput" id="pointSelector"';
-if (!$diving) { echo ' style="display:none;"'; }
-echo '>';
-echo 'Points:&nbsp;<input name="points" id="points" style="width:3em;" type="text" value="'.$points.'"></div>';
-?>
+<form method="post" action="submit.php" class="submit-form">
 
-<div id="locationAutoComplete" class="dataInput">
-<label for="locationInput">Location:&nbsp;</label>
-<input name="location" id="locationInput" type="text" value="<?php  echo $location; ?>">
-<div id="locationContainer"></div>
-</div>
+  <div class="field">
+    <label for="eventInput">Event</label>
+    <input name="event" id="eventInput" type="text" data-list="dl-events"
+           value="<?php echo htmlspecialchars($event); ?>" autocomplete="off">
+  </div>
 
-<div id="calContainer" class="dataInput"></div><br clear="all">
-<div style="display:none">
-<input type="text" name="date" id="eventdate" value="<?php  echo $eventdate; ?>"/> 
-</div>
+  <div class="field">
+    <label for="classification">Classification</label>
+    <select name="classification" id="classification">
+      <?php
+        echo '<option value="AAAA"'.($classification=='AAAA' ? ' selected' : '').'>AAAA</option>';
+        echo '<option value="AAA"'.($classification=='AAA' ? ' selected' : '').'>AAA</option>';
+        echo '<option value="AA"'.($classification=='AA' ? ' selected' : '').'>AA</option>';
+      ?>
+    </select>
+  </div>
 
-<script type="text/javascript" src="autocomplete.js">
-</script>
+  <div class="field">
+    <label for="schoolInput">School</label>
+    <input name="school" id="schoolInput" type="text" data-list="dl-schools"
+           value="<?php echo htmlspecialchars($school); ?>" autocomplete="off">
+  </div>
 
-<input type="submit" class="dataInput" value="Submit">
+  <?php
+  $hideAthlete = (!$athlete || ($event && strstr($event, 'Relay'))) ? ' style="display:none;"' : '';
+  echo '<div id="athleteAutoComplete" class="field"'.$hideAthlete.'>';
+  echo '<label for="athleteInput">Athlete</label>';
+  echo '<div>';
+  echo '<input name="athlete" id="athleteInput" type="text" data-list="dl-athletes" value="'.htmlspecialchars($athlete).'" autocomplete="off">';
+  echo '<span class="field-hint">Include grade, e.g. Jane Smith (10)</span>';
+  echo '</div></div>';
+  ?>
+
+  <?php
+  $hideTime   = $diving ? ' style="display:none;"' : '';
+  $hidePoints = !$diving ? ' style="display:none;"' : '';
+  echo '<div class="field" id="timeSelector"'.$hideTime.'>';
+  echo '<label>Time</label>';
+  echo '<div class="time-inputs">';
+  echo '<input id="minutes" class="time-part" type="text" name="minutes" value="'.htmlspecialchars($minutes).'" placeholder="min">';
+  echo '<span class="time-sep">:</span>';
+  echo '<input id="seconds" class="time-part" type="text" name="seconds" value="'.htmlspecialchars($seconds).'" placeholder="sec">';
+  echo '<span class="time-sep">.</span>';
+  echo '<input id="millis" class="time-part" type="text" name="millis" value="'.htmlspecialchars($millis).'" placeholder="100s">';
+  echo '</div></div>';
+  echo '<div class="field" id="pointSelector"'.$hidePoints.'>';
+  echo '<label for="points">Points</label>';
+  echo '<input name="points" id="points" class="time-part" type="text" value="'.htmlspecialchars($points).'">';
+  echo '</div>';
+  ?>
+
+  <div class="field">
+    <label for="locationInput">Location</label>
+    <input name="location" id="locationInput" type="text" data-list="dl-locations"
+           value="<?php echo htmlspecialchars($location); ?>" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <label for="eventdate">Date</label>
+    <input type="date" name="date" id="eventdate" class="date-input"
+           value="<?php echo $eventdate ? date('Y-m-d', strtotime($eventdate)) : ''; ?>">
+  </div>
+
+  <div class="field">
+    <button type="submit" class="btn">Submit Time</button>
+  </div>
+
 </form>
 
-</body>
-</html>
+<script src="autocomplete.js"></script>

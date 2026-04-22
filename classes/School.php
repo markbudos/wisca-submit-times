@@ -13,6 +13,7 @@ class School {
     public $school;
     public $schoolId;
     public $classification;
+    public $size; // alias for classification (legacy column name)
     public $girlscoaches = [];
     public $boyscoaches = [];
 
@@ -68,19 +69,20 @@ class School {
 
     public function save() {
         $conn = WiscaDB::get();
+        $intOrNull = fn($v) => ($v !== '' && $v !== null) ? (int)$v : null;
         $sql = "UPDATE Schools 
                    SET size = ?, school = ?, 
                        coachId1 = ?, coachId2 = ?, coachId3 = ?, 
                        coachId4 = ?, coachId5 = ?, coachId6 = ?
                  WHERE schoolId = ?";
         $params = [
-            $this->classification, $this->school,
-            $this->girlscoaches['head']->userId,
-            $this->girlscoaches['assistant']->userId,
-            $this->girlscoaches['dive']->userId,
-            $this->boyscoaches['head']->userId,
-            $this->boyscoaches['assistant']->userId,
-            $this->boyscoaches['dive']->userId,
+            $this->classification ?? $this->size, $this->school,
+            $intOrNull($this->girlscoaches['head']->userId),
+            $intOrNull($this->girlscoaches['assistant']->userId),
+            $intOrNull($this->girlscoaches['dive']->userId),
+            $intOrNull($this->boyscoaches['head']->userId),
+            $intOrNull($this->boyscoaches['assistant']->userId),
+            $intOrNull($this->boyscoaches['dive']->userId),
             $this->schoolId
         ];
         $stmt = $conn->prepare($sql);

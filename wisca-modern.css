@@ -1,0 +1,282 @@
+/* WISCA Scripts — extends wisca-site.css */
+@import url('/assets/css/wisca-site.css');
+
+/* ── Card ─────────────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px 36px;
+}
+
+h2, h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--blue);
+}
+
+/* ── Forms ────────────────────────────────────────────────────── */
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="password"] {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--text);
+  background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--blue-lt);
+  box-shadow: 0 0 0 3px rgba(46,134,193,.15);
+}
+
+.field small {
+  display: block;
+  margin-top: 4px;
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.btn {
+  display: inline-block;
+  padding: 10px 24px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s;
+}
+
+.btn:hover { background: var(--blue-lt); }
+
+.btn-xs {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: .75rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.btn-accept  { background: #1e8449; color: #fff; }
+.btn-accept:hover { background: #27ae60; }
+.btn-delete  { background: #922b21; color: #fff; margin-left: 4px; }
+.btn-delete:hover  { background: #e74c3c; }
+
+.col-actions { width: 100px; white-space: nowrap; }
+.col-name    { width: 260px; min-width: 260px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+.col-time    { width: 80px;  min-width: 80px;  text-align: right; font-variant-numeric: tabular-nums; }
+.col-event   { width: 180px; min-width: 180px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+
+tr.date-group td {
+  background: var(--bg);
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 10px 12px 4px;
+  border-bottom: 2px solid var(--border);
+}
+
+/* ── Alerts ───────────────────────────────────────────────────── */
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: .9rem;
+}
+
+.alert-info  { background: #eaf4fb; color: #1a5276; border: 1px solid #aed6f1; }
+.alert-error { background: #fdedec; color: #922b21; border: 1px solid #f1948a; }
+
+/* ── Wide content (full-bleed card) ──────────────────────────── */
+#wisca-content.wide {
+  max-width: 1100px;
+}
+
+/* ── Scrollable table wrapper with sticky first column ────────── */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius);
+}
+
+/* ── Tables ───────────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+th {
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--muted);
+  background: var(--bg);
+}
+
+/* constrain affiliation column */
+td.col-aff {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* sticky first column */
+th:first-child,
+td:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--card);
+  z-index: 1;
+  box-shadow: 2px 0 4px rgba(0,0,0,.06);
+}
+
+th:first-child {
+  background: var(--bg);
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8f9fa; }
+
+/* ── Submit form ───────────────────────────────────────────────── */
+.submit-form {
+  max-width: 540px;
+}
+
+.submit-form .field {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: start;
+  gap: 6px 12px;
+  margin-bottom: 18px;
+}
+
+.submit-form .field label {
+  padding-top: 8px;
+  font-weight: 500;
+  color: var(--text);
+  font-size: .9rem;
+  text-align: right;
+  grid-column: 1;
+  white-space: nowrap;
+}
+
+.submit-form .field > div,
+.submit-form .field > input,
+.submit-form .field > select {
+  min-width: 0;
+}
+
+.submit-form .field .hint,
+.field-hint {
+  display: block;
+  font-size: .78rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 3px;
+}
+
+.submit-form .field input[type="text"]:not(.time-part),
+.submit-form .field select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .92rem;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.submit-form .field input[type="text"]:focus,
+.submit-form .field select:focus,
+.date-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(0,95,165,.12);
+}
+/* Time inputs side by side */
+.time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.time-part {
+  width: 48px;
+  min-width: 0;
+  text-align: center;
+  padding: 7px 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .92rem;
+}
+
+.time-sep {
+  font-weight: 700;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.date-input {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .92rem;
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  width: auto;
+}
+
+
+/* Submit button row: right-align under the inputs */
+.submit-form .field:last-child {
+  grid-template-columns: 140px 1fr;
+}
+
+.submit-form .field:last-child button {
+  grid-column: 2;
+}
+
+/* ── Native datalist styling (browser-handled, no custom CSS needed) ── */

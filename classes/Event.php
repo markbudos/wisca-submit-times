@@ -148,18 +148,19 @@ class Event {
 		if ($eo->type != 'r') {
 				$team = '';
 		}
-		$params = array('eventId'=>$eo->number, 
-					   'firstname'=>$ao->firstName, 
-					   'lastname'=>$ao->lastName, 
-					   'team'=>$team, 'school'=>$school, 
+		$params = array('eventId'=>$eo->number,
+					   'participantId'=>$participant,
+					   'firstname'=>$ao ? $ao->firstName : '',
+					   'lastname'=>$ao ? $ao->lastName : '',
+					   'team'=>$team, 'school'=>$school,
 					   'event'=>$eo->event,
-					   'type'=>$eo->type, 
-					   'minutes'=>$minutes, 
-					   'seconds'=>$seconds, 
-					   'milliseconds'=>$millis, $do, 
-					   'gradyear'=>$ao->gradyear, 
-					    0, 0, 
-					   'name'=>Session::getSession()->user->name, 
+					   'type'=>$eo->type,
+					   'minutes'=>$minutes,
+					   'seconds'=>$seconds,
+					   'milliseconds'=>$millis, $do,
+					   'gradyear'=>$ao ? $ao->gradyear : null,
+					    0, 0,
+					   'name'=>Session::getSession()->user->name,
 					   'location'=>$location,
 					   'date'=>$date
 				);

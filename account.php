@@ -15,65 +15,48 @@ if (isset($_REQUEST['rd'])) {
 if ($user->email) {
 	//already registered...
 	HeaderNav::stream("Account");
-	echo '<h3 style="text-align: left; margin-bottom: 1em">Edit Account:</h3>';
-	if (isset($_GET['msg'])) {	echo '<h4>'.$_GET['msg'].'</h4>'; }
-	echo '<form method="post" action="reg.php">';
+	echo '<h2>Edit Account</h2>';
+	if (isset($_GET['msg'])) { echo '<div class="alert alert-info">'.$_GET['msg'].'</div>'; }
 	if (!$user->member && !$user->admin) {
-		echo '<p>As a registered user, you can submit times.  Please contact <a href="mailto:nooksack_swimmer@hotmail.com?subject=Membership information.">WISCA Membership</a> for membership information and the ability to view all submissions.</p>';
+		echo '<p>As a registered user, you can submit times. Please contact <a href="mailto:nooksack_swimmer@hotmail.com?subject=Membership information.">WISCA Membership</a> for membership information and the ability to view all submissions.</p>';
 	}
-	
+	echo '<form method="post" action="reg.php">';
 	echo '<input type="hidden" name="type" value="save" />';
 	echo '<input type="hidden" name="rd" value="'.$rd.'" />';
-	echo '<div style="margin-bottom: 9px">E-Mail : ';
-	echo '<input type="text" name="newemail" value="'.$user->email.'" /></div>';
-	echo '<div style="margin-bottom: 9px">New Password: ';
-	echo '<input type="password" name="newpassword"/> (leave blank to keep existing password)</div>';
-	echo '<div style="margin-bottom: 9px">Name: ';
-	echo '<input type="text" name="name" value="'.$user->name.'"/></div>';
-	echo '<div style="margin-bottom: 9px">Affiliation: ';
-	echo '<input type="text" name="aff" value="'.$user->affiliation.'"/></div>';
-	echo '<div style="margin-bottom: 9px">';
-	echo '<input type="submit" value="Save" /></div></form>';
+	echo '<div class="field"><label>E-Mail</label><input type="text" name="newemail" value="'.$user->email.'" /></div>';
+	echo '<div class="field"><label>New Password</label><input type="password" name="newpassword" placeholder="Leave blank to keep existing" /></div>';
+	echo '<div class="field"><label>Name</label><input type="text" name="name" value="'.$user->name.'" /></div>';
+	echo '<div class="field"><label>Affiliation</label><input type="text" name="aff" value="'.$user->affiliation.'" /></div>';
+	echo '<button type="submit" class="btn">Save</button>';
+	echo '</form>';
 } else if (isset($_GET['register']) && $_GET['register'] == '1') {
 	HeaderNav::stream("Account");
-	echo '<h3 style="text-align: left; margin-bottom: 1em">New Account:</h3>';
-	if (isset($_GET['msg'])) {
-		echo '<h4>'.$_GET['msg'].'</h4>';
-	}
+	echo '<h2>Create Account</h2>';
+	if (isset($_GET['msg'])) { echo '<div class="alert alert-info">'.$_GET['msg'].'</div>'; }
 	echo '<form method="post" action="reg.php">';
 	echo '<input type="hidden" name="type" value="new" />';
 	echo '<input type="hidden" name="rd" value="'.$rd.'" />';
-	echo '<div style="margin-bottom: 9px">E-Mail : ';
-	echo '<input type="text" name="email" value="" /></div>';
-	echo '<div style="margin-bottom: 9px">Password: ';
-	echo '<input type="password" name="password"/></div>';
-	echo '<div style="margin-bottom: 9px">Name: ';
-	echo '<input type="text" name="name"/></div>';
-	echo '<div style="margin-bottom: 9px">Affiliation: ';
-	echo '<input type="text" name="aff" value="'.$user->affiliation.'"/></div>';
-	echo '<div style="margin-bottom: 9px">';
-	echo '<input type="submit" value="Register" /></div></form>';
+	echo '<div class="field"><label>E-Mail</label><input type="text" name="email" /></div>';
+	echo '<div class="field"><label>Password</label><input type="password" name="password" /></div>';
+	echo '<div class="field"><label>Name</label><input type="text" name="name" /></div>';
+	echo '<div class="field"><label>Affiliation</label><input type="text" name="aff" value="'.$user->affiliation.'" /></div>';
+	echo '<button type="submit" class="btn">Register</button>';
+	echo '</form>';
 } else {
 	HeaderNav::stream("Log in");
-	echo '<h3 style="text-align: left; margin-bottom: 1em">Log in:</h3>';
-	if (isset($_GET['msg'])) {
-		echo '<h4>'.htmlentities($_GET['msg']).'</h4>';
-	}
+	echo '<h2>Log In</h2>';
+	if (isset($_GET['msg'])) { echo '<div class="alert alert-error">'.htmlentities($_GET['msg']).'</div>'; }
 	echo '<form method="post" action="reg.php">';
 	echo '<input type="hidden" name="rd" value="'.$rd.'" />';
-	echo '<div style="margin-bottom: 9px">E-Mail : ';
-	echo '<input type="text" name="email" value="" /></div>';
-	echo '<div style="margin-bottom: 9px">Password: ';
-	echo '<input type="password" name="password"/></div>';
-	echo '<p>Please contact <a href="mailto:nooksack_swimmer@hotmail.com?subject=Membership information.">WISCA Membership</a> if you have forgotten your password.</p>';
-	echo '<div style="margin-bottom: 9px">';
-	echo '<input type="submit" value="Log In" /></div></form>';
+	echo '<div class="field"><label>E-Mail</label><input type="text" name="email" /></div>';
+	echo '<div class="field"><label>Password</label><input type="password" name="password" /></div>';
+	echo '<p style="margin-bottom:1rem">Forgot your password? Contact <a href="mailto:nooksack_swimmer@hotmail.com?subject=Membership information.">WISCA Membership</a>.</p>';
+	echo '<button type="submit" class="btn">Log In</button>';
+	echo '</form>';
 }
 
-echo '</form>';
-
 ?>
-
+</div></main>
 </body>
 </html>
 

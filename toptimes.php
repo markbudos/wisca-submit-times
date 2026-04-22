@@ -4,7 +4,7 @@ require_once 'classes/Session.php';
 Session::getSession()->checkUser(Session::$MEMBER);
 $classification = isset($_REQUEST['c']) ? $_REQUEST['c'] : (isset($_COOKIE['cl']) ? $_COOKIE['cl'] : 'AAAA');
 
-HeaderNav::stream("View Times");
+HeaderNav::stream("View Times", null, null, 'wide');
 
 echo '<h3>State Times '.$classification.'</h3>';
 
@@ -70,7 +70,7 @@ $eventMap = array();
 
 foreach ($events as $event) {
 	echo '<h4>'.$event->label().'</h4>';
-	echo '<table>';
+	echo '<div class="table-scroll"><table>';
 	foreach ($event->results as $result) {
 		$athlete = new Athlete(); //dumb...sometimes we don't even have an athlete.
 		$athlete->init($result);
@@ -89,74 +89,48 @@ foreach ($events as $event) {
 		$row = $athlete->formatResult($result, false);
 		echo '<tr>';
 		if (Session::getSession()->user->admin) {
-			echo '<td style="width:80px;">';
-			echo '<input onclick="resultAccept(this)" type="radio" name="result_'.$result['resultId'].'" value="accept">';
-			echo '<span style="width:80px;text-align=left">'.($result['validated'] ? 'Suspend' : 'Accept').'</span>';
-			echo '</td>';
-			echo '<td style="width:80px;">';
-			echo '<input onclick="resultDelete(this)" type="radio" name="result_'.$result['resultId'].'" value="deny">';
-			echo '<span style="width:80px;text-align=left">Delete</span>';
+			$vid = $result['validated'] ? '1' : '0';
+			$alabel = $result['validated'] ? 'Suspend' : 'Accept';
+			echo '<td class="col-actions">';
+			echo '<button type="button" class="btn-xs btn-accept" data-id="'.$result['resultId'].'" data-validated="'.$vid.'" onclick="resultAccept(this)">'.$alabel.'</button>';
+			echo '<button type="button" class="btn-xs btn-delete" data-id="'.$result['resultId'].'" onclick="resultDelete(this)">Del</button>';
 			echo '</td>';
 		}
 		$i = 0;
 		$widths = array(100, 80, 280, 60, 220, 300);
 		foreach ($row as $td) {
+			$nameClass = ($i === 0) ? ' class="col-name"' : '';
 			if (($i++ == 0 || $i == 2 || $i == 3) && $style) {
-				echo '<td width="'.$widths[$i].'" style="'.$style.'">'.$td.'</td>';
+				echo '<td'.$nameClass.' width="'.$widths[$i].'" style="'.$style.'">'.$td.'</td>';
 			} else {
-				echo '<td width="'.$widths[$i].'">'.$td.'</td>';
+				echo '<td'.$nameClass.' width="'.$widths[$i].'">'.$td.'</td>';
 			}
 		}
 		echo '</tr>';
 	}
-	echo '</table>';
+	echo '</table></div>';
 	echo '</form>';
 }
 
 ?>
 <script>
-function swapRowStyle(tr, style, change) {
-	tr.children[2].style[style] = 
-		tr.children[3].style[style] = 
-		tr.children[4].style[style] = change;
+function resultDelete(btn) {
+	var tr = btn.closest('tr');
+	Wisca.ajax("/scripts/approve.php?action=delete&resultid="+btn.dataset.id, function() {});
+	setTimeout(function() { tr.style.display = 'none'; }, 800);
 }
 
-function resultDelete(input) {
-	var tr = input.parentNode.parentNode;
-	var participant = tr.children[3].firstChild.nodeValue;
-	var nextRow = tr;
-	while (nextRow = nextRow.nextSibling) {
-		if (participant == nextRow.children[3].firstChild.nodeValue) {
-			swapRowStyle(nextRow, 'fontStyle', 'initial');
-			break;
-		}
-	}
-
-	var resultid = tr.children[0].firstChild.name.split('_')[1];
-	Wisca.ajax("/scripts/approve.php?action=delete&resultid="+resultid, function(responseText) {
-		var response = responseText;
-	});
-
-	setTimeout(function(tohide) {	
-		tohide.style.display = 'none';
-	}, 1000, tr);
-}
-
-function resultAccept(input) {
-	var tr = input.parentNode.parentNode;
-	var accept = tr.children[0].firstChild;
-	var wasLabel = accept.nextSibling.firstChild.nodeValue;
-	swapRowStyle(tr, 'fontWeight', (wasLabel == 'Accept' ? 'bold' : 'normal'));
-
-	Wisca.ajax("/scripts/approve.php?action="+wasLabel.toLowerCase()+"&resultid="+accept.name.split('_')[1], function(responseText) {
-		var response = responseText;
-	});
-
-	setTimeout(function(tochange) {	
-		var label = tochange.nextSibling.firstChild;
-		label.nodeValue = (label.nodeValue == 'Suspend' ? "Accept" : "Suspend");
-		tochange.checked = false;
-	}, 1000, accept);
+function resultAccept(btn) {
+	var tr = btn.closest('tr');
+	var validated = btn.dataset.validated === '1';
+	var action = validated ? 'suspend' : 'accept';
+	Wisca.ajax("/scripts/approve.php?action="+action+"&resultid="+btn.dataset.id, function() {});
+	setTimeout(function() {
+		var nowValidated = !validated;
+		btn.dataset.validated = nowValidated ? '1' : '0';
+		btn.textContent = nowValidated ? 'Suspend' : 'Accept';
+		tr.style.fontWeight = nowValidated ? 'bold' : '';
+	}, 800);
 }
 </script>
 

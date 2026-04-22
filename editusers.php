@@ -2,7 +2,7 @@
 require_once 'classes/Session.php';
 
 Session::getSession()->checkUser(Session::$MEMBER);
-HeaderNav::stream("Edit Users");
+HeaderNav::stream("Edit Users", null, null, 'wide');
 $thisuser = Session::getSession()->user;
 
 $all = false;
@@ -14,14 +14,14 @@ if ($thisuser->admin) {
 	echo '<h3>Users</h3>';
 }
 echo '<form method="post" action="editusers.php">';
-echo '<table>';
+echo '<div class="table-scroll"><table>';
 
 $users = UserAdmin::loadUsers($all);
 
 if ($thisuser->admin) {
-	echo '<tr><th>Name</th><th>Email</th><th>Member</th><th>Admin</th><th>Deleted</th><th>Affiliation</th><th>Created</th><th>Modified</th></tr>';
+	echo '<tr><th>Name</th><th>Email</th><th>Member</th><th>Admin</th><th>Deleted</th><th class="col-aff">Affiliation</th><th>Created</th><th>Modified</th></tr>';
 } else {
-	echo '<tr><th>Name</th><th>Email</th><th>Member</th><th>Affiliation</th><th>Created</th></tr>';
+	echo '<tr><th>Name</th><th>Email</th><th>Member</th><th class="col-aff">Affiliation</th><th>Created</th></tr>';
 }
 foreach ($users as $user) {
 	echo '<tr onclick="userCheck(this)">';
@@ -34,7 +34,7 @@ foreach ($users as $user) {
 	} else {
 		echo '<td align="center">'.($user->member ? "Yes" : "No").'</td>';
 	}
-	echo '<td width="200">'.$user->affiliation.'</td>';
+	echo '<td class="col-aff" width="200">'.$user->affiliation.'</td>';
 	echo '<td width="170">'.$user->created.'</td>';
 	if ($thisuser->admin) {
 		echo '<td width="170">'.$user->modified.'</td>';
@@ -42,7 +42,7 @@ foreach ($users as $user) {
 	echo '</tr>';
 }
 
-echo '</table></form>';
+echo '</table></div></form>';
 ?>
 
 <script>

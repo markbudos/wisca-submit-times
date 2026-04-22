@@ -4,7 +4,7 @@ Session::getSession()->checkUser(Session::$ADMIN);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$school = School::lookupSchool($_REQUEST['schoolId']);
 	$school->school = $_REQUEST['school'];
-	$school->size = $_REQUEST['classification'];
+	$school->classification = $_REQUEST['classification'];
 	$school->girlscoaches['head'] = new Coach($_REQUEST['hc_girls'], null);
 	$school->girlscoaches['assistant'] = new Coach($_REQUEST['ac_girls'], null);
 	$school->girlscoaches['dive'] = new Coach($_REQUEST['dc_girls'], null);
